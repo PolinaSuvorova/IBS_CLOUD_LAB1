@@ -1,0 +1,36 @@
+
+### Get token for processing service
+
+POST http://localhost:8500/uaa/oauth/token?grant_type=password&username=processing&password=processing
+Authorization: Basic client secret
+
+> {%
+ client.global.set("processing_token", response.body.access_token);
+ %}
+
+###
+GET localhost:8805/param
+Authorization: Bearer {{processing_token}}
+
+###
+POST localhost:8804/actuator/refresh
+Authorization: Bearer {{processing_token}}
+
+###
+GET localhost:8804/param
+Authorization: Bearer {{processing_token}}
+
+###
+POST localhost:8804/actuator/bus-refresh
+Authorization: Bearer {{processing_token}}
+
+###
+POST localhost:8804/actuator/bus-env
+Authorization: Bearer {{processing_token}}
+Content-Type: application/json
+
+{"name":"tparam", "value":"777"}
+
+###
+GET localhost:8805/test?fail=1
+Authorization: Bearer {{processing_token}}
